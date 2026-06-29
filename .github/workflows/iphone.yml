@@ -5,7 +5,6 @@ on:
     - cron: '0 */12 * * *'
   workflow_dispatch:
 
-# Принудительно даем роботу права на создание веб-страницы
 permissions:
   contents: read
   pages: write
@@ -18,30 +17,35 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Шаг 1: Создаем папку и генерируем страницу с ключами
-      - name: Collect Shadowsocks
+      - name: Collect Fresh Proxy Keys
         run: |
           mkdir -p public
           echo "<html><head><title>My Configs</title></head><body>" > public/index.html
           echo "<h1>My iPhone Subscription</h1>" >> public/index.html
+          echo "<p>Last updated: $(date)</p>" >> public/index.html
           echo "<pre>" >> public/index.html
-          echo "=== SHADOWSOCKS KEYS ===" >> public/index.html
           
-          # Скачиваем ключи из интернета. Если ссылка недоступна, робот не упадет
-          curl -sL "https://githubusercontent.com" >> public/index.html || true
+          echo "=== LIVE SHADOWSOCKS & VLESS KEYS ===" >> public/index.html
           
-          # Ваш постоянный запасной ключ
+          # Источник 1: Свежие российские и общие VLESS/Shadowsocks базы (2026)
+          curl -sL "https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/main/githubmirror/clean/vless.txt" >> public/index.html || true
+          
+          # Источник 2: Проверенные раздробленные по протоколам v2ray ключи
+          curl -sL "https://raw.githubusercontent.com/barry-far/V2ray-config/main/Splitted-By-Protocol/vmess.txt" >> public/index.html || true
+          
+          # Источник 3: Популярный агрегатор прокси-ключей
+          curl -sL "https://raw.githubusercontent.com/YasserDivaR/pr0xy/main/ShadowSocks2021.txt" >> public/index.html || true
+          
+          # Наш неубиваемый постоянный ключ
           echo "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNjp0ZXN0@127.0.0.1:8585#MyPermanentKey" >> public/index.html
           
           echo "</pre></body></html>" >> public/index.html
 
-      # Шаг 2: Упаковываем сайт для отправки
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
 
-      # Шаг 3: Официальная публикация на серверах GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
