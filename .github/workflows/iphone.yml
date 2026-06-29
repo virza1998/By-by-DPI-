@@ -5,41 +5,38 @@ on:
     - cron: '0 */12 * * *'
   workflow_dispatch:
 
-# Добавляем глобальное разрешение для старых модулей
+# Принудительно включаем поддержку Node 24 для всех шагов
 env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
+      # Скачиваем код репозитория с принудительным флагом Node24
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Скачиваем ключи и создаем простую HTML страницу
       - name: Collect Shadowsocks
         run: |
           mkdir -p public
-          echo "# My iPhone Subscription" > public/index.html
+          echo "<html><head><title>My Configs</title></head><body>" > public/index.html
+          echo "<h1>My iPhone Subscription</h1>" >> public/index.html
           echo "<pre>" >> public/index.html
           echo "=== SHADOWSOCKS KEYS ===" >> public/index.html
-          curl -s https://githubusercontent.com >> public/index.html
-          echo "</pre>" >> public/index.html
+          curl -sL "https://githubusercontent.com" >> public/index.html
+          echo "</pre></body></html>" >> public/index.html
 
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./public
-
-  deploy:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Публикуем напрямую в ветку gh-pages без использования сложных экшенов
+      - name: Deploy to gh-pages branch
+        run: |
+          cd public
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@://github.com"
+          git add .
+          git commit -m "Update configs"
+          git push --force "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@://github.com{{ github.repository }}.git" HEAD:gh-pages
