@@ -5,11 +5,20 @@ on:
     - cron: '0 */12 * * *'
   workflow_dispatch:
 
+# Принудительно даем роботу права на создание веб-страницы
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Шаг 1: Создаем сайт и скачиваем ключи (если сайт недоступен, робот не упадет)
+      # Шаг 1: Создаем папку и генерируем страницу с ключами
       - name: Collect Shadowsocks
         run: |
           mkdir -p public
@@ -18,21 +27,21 @@ jobs:
           echo "<pre>" >> public/index.html
           echo "=== SHADOWSOCKS KEYS ===" >> public/index.html
           
-          # Пытаемся скачать ключи. Если сайт лежит, команда || true не даст роботу упасть с ошибкой 6
+          # Скачиваем ключи из интернета. Если ссылка недоступна, робот не упадет
           curl -sL "https://githubusercontent.com" >> public/index.html || true
           
-          # Сюда вы можете вписать любой ваш личный ключ (он будет работать всегда!)
+          # Ваш постоянный запасной ключ
           echo "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNjp0ZXN0@127.0.0.1:8585#MyPermanentKey" >> public/index.html
           
           echo "</pre></body></html>" >> public/index.html
 
-      # Шаг 2: Публикуем созданную страницу в ветку сайта
-      - name: Deploy to gh-pages branch
-        run: |
-          cd public
-          git init
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Update configs"
-          git push --force "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@://github.com{{ github.repository }}.git" HEAD:gh-pages
+      # Шаг 2: Упаковываем сайт для отправки
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      # Шаг 3: Официальная публикация на серверах GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
