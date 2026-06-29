@@ -27,13 +27,10 @@ jobs:
           
           echo "=== LIVE ANTI-BLOCK VLESS REALITY KEYS ===" >> public/index.html
           
-          # Источник 1: Огромная база рабочих VLESS, VMess и Trojan ключей (Обновляется каждые несколько часов)
+          # Источник 1: Официальный живой сборник чистых ссылок VLESS Reality и Shadowsocks (Без кодирования!)
           curl -sL "https://githubusercontent.com" >> public/index.html || true
           
-          # Источник 2: Проверенный азиатский и европейский пул скоростных VLESS Reality серверов
-          curl -sL "https://githubusercontent.com" >> public/index.html || true
-          
-          # Источник 3: Популярный и очень стабильный агрегатор незаблокированных конфигураций
+          # Источник 2: Запасной проверенный крупный список прямых ссылок
           curl -sL "https://githubusercontent.com" >> public/index.html || true
           
           echo "</pre></body></html>" >> public/index.html
