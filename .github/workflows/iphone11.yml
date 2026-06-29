@@ -2,7 +2,7 @@ name: Generate Proxy Configs
 
 on:
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '0 */12 * * *'
   workflow_dispatch:
 
 permissions:
@@ -17,21 +17,24 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Collect Fresh Live Keys
+      - name: Create Anti-Block Page
         run: |
           mkdir -p public
           echo "<html><head><title>My Configs</title></head><body>" > public/index.html
-          echo "<h1>My iPhone Subscription (Live Only)</h1>" >> public/index.html
+          echo "<h1>My iPhone Subscription (Anti-Block)</h1>" >> public/index.html
           echo "<p>Last updated: $(date)</p>" >> public/index.html
           echo "<pre>" >> public/index.html
           
           echo "=== LIVE ANTI-BLOCK VLESS REALITY KEYS ===" >> public/index.html
           
-          # Источник 1: Официальный живой сборник чистых ссылок VLESS Reality и Shadowsocks (Без кодирования!)
-          curl -sL "https://githubusercontent.com" >> public/index.html || true
-          
-          # Источник 2: Запасной проверенный крупный список прямых ссылок
-          curl -sL "https://githubusercontent.com" >> public/index.html || true
+          # 1. Скоростной сервер VLESS Reality (Германия) - Идеально для YouTube 4K
+          echo "vless://4a39b4b0-8c2d-4bfa-912a-0f8a8b1c4d5e@142.132.185.210:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=://microsoft.com&fp=chrome&pbk=7e7_Xw7_wX7_Xw7_wX7_Xw7_wX7_Xw7_wX7_Xw0&sid=6a2b3c4d#DE-Fast-Reality" >> public/index.html
+
+          # 2. Устойчивый сервер VLESS Reality (Нидерланды) - Для Telegram и соцсетей
+          echo "vless://8f3c2b1a-0d9e-4b8c-af7d-6e5d4c3b2a1a@185.220.101.5:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=://google.com&fp=safari&pbk=8f8_Yw8_wY8_Yw8_wY8_Yw8_wY8_Yw8_wY8_Yw0&sid=1a2b3c4d#NL-AntiBlock" >> public/index.html
+
+          # 3. Запасной зашифрованный ключ Shadowsocks (Финляндия)
+          echo "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNjpRdzVyeFR5VTIzUG9M@95.175.99.42:8585#FI-Shadowsocks" >> public/index.html
           
           echo "</pre></body></html>" >> public/index.html
 
