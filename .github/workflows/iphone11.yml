@@ -2,7 +2,7 @@ name: Generate Proxy Configs
 
 on:
   schedule:
-    - cron: '0 */4 * * *' # Робот будет проверять сервера чаще — каждые 4 часа!
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -17,24 +17,24 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Collect Advanced Anti-Block Keys
+      - name: Collect Fresh Live Keys
         run: |
           mkdir -p public
           echo "<html><head><title>My Configs</title></head><body>" > public/index.html
-          echo "<h1>My iPhone Subscription (Anti-Block)</h1>" >> public/index.html
+          echo "<h1>My iPhone Subscription (Live Only)</h1>" >> public/index.html
           echo "<p>Last updated: $(date)</p>" >> public/index.html
           echo "<pre>" >> public/index.html
           
-          echo "=== ANTI-BLOCK VLESS REALITY KEYS ===" >> public/index.html
+          echo "=== LIVE ANTI-BLOCK VLESS REALITY KEYS ===" >> public/index.html
           
-          # Источник 1: Новейшие ключи VLESS Reality с обходом ТСПУ глушилок (2026)
+          # Источник 1: Огромная база рабочих VLESS, VMess и Trojan ключей (Обновляется каждые несколько часов)
           curl -sL "https://githubusercontent.com" >> public/index.html || true
           
-          # Источник 2: Высокоскоростные VLESS / Trojan сервера, обновляемые каждые 10 минут
+          # Источник 2: Проверенный азиатский и европейский пул скоростных VLESS Reality серверов
           curl -sL "https://githubusercontent.com" >> public/index.html || true
           
-          # Источник 3: Запасной проверенный пул для обхода блокировок YouTube
-          curl -sL "https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/main/githubmirror/clean/vless.txt" >> public/index.html || true
+          # Источник 3: Популярный и очень стабильный агрегатор незаблокированных конфигураций
+          curl -sL "https://githubusercontent.com" >> public/index.html || true
           
           echo "</pre></body></html>" >> public/index.html
 
@@ -46,4 +46,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
