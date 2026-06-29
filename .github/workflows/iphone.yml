@@ -9,6 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      # Обновлено до v4
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -21,8 +22,22 @@ jobs:
           curl -s https://githubusercontent.com >> public/index.html
           echo "</pre>" >> public/index.html
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      # Заменено на официальный и самый свежий робот публикации от GitHub
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          path: ./public
+
+  deploy:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
