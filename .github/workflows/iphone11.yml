@@ -2,7 +2,7 @@ name: Generate Proxy Configs
 
 on:
   schedule:
-    - cron: '0 */4 * * *' # Робот будет сам обновлять ключи каждые 4 часа!
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -25,7 +25,9 @@ jobs:
           echo "<p>Last updated: $(date)</p>" >> public/index.html
           echo "<pre>" >> public/index.html
           
-          # Скачиваем ТОП-150 самых быстрых и свежих ключей для телефонов (VLESS + Shadowsocks)
+          echo "=== LIVE ANTI-BLOCK VLESS REALITY KEYS ===" >> public/index.html
+          
+          # Скачиваем ТОП-150 самых быстрых телефонных ключей из правильной папки githubmirror/clean/
           curl -sL "https://githubusercontent.com" >> public/index.html || true
           
           # Добавляем резервную CIDR-подписку для обхода блокировок мобильного интернета
