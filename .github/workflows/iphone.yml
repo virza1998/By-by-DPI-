@@ -5,21 +5,11 @@ on:
     - cron: '0 */12 * * *'
   workflow_dispatch:
 
-# Принудительно включаем поддержку Node 24 для всех шагов
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      # Скачиваем код репозитория с принудительным флагом Node24
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Скачиваем ключи и создаем простую HTML страницу
+      # Шаг 1: Скачиваем ключи из интернета и создаем простую страничку
       - name: Collect Shadowsocks
         run: |
           mkdir -p public
@@ -30,7 +20,7 @@ jobs:
           curl -sL "https://githubusercontent.com" >> public/index.html
           echo "</pre></body></html>" >> public/index.html
 
-      # Публикуем напрямую в ветку gh-pages без использования сложных экшенов
+      # Шаг 2: Публикуем созданную страницу напрямую в ветку сайта
       - name: Deploy to gh-pages branch
         run: |
           cd public
